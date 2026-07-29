@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gifuda — Desktop Pet Overlay</title>
-	<meta property="og:title" content="Gifuda — Desktop Pet Overlay" />
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://gifuda.nya.pub/" />
-	<meta property="og:image" content="https://gifuda.nya.pub/gifuda-ui.png" />
-	<meta property="og:description" content="A full-featured overlay for anything you want living on your desktop." />
-	<meta name="theme-color" content="#FFB7C5">
-	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:title" content="Gifuda">
-	<meta name="twitter:description" content="The perfect desktop companion for people who name their GIFs">
-	<meta name="twitter:image" content="https://gifuda.nya.pub/gifuda-ui.png">
+        <meta property="og:title" content="Gifuda — Desktop Pet Overlay" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://gifuda.nya.pub/" />
+        <meta property="og:image" content="https://gifuda.nya.pub/gifuda-ui.png" />
+        <meta property="og:description" content="A full-featured overlay for anything you want living on your desktop." />
+        <meta name="theme-color" content="#FFB7C5">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Gifuda">
+        <meta name="twitter:description" content="The perfect desktop companion for people who name their GIFs">
+        <meta name="twitter:image" content="https://gifuda.nya.pub/gifuda-ui.png">
     <link rel="icon" type="image/png" href="gifuda_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after {
             margin: 0;
@@ -39,6 +42,9 @@
             --lavender-deep: #9F86C0;
             --danger: #E85D75;
             --cream: #FFF5F7;
+            --font-display: 'Zen Maru Gothic', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         html {
@@ -47,7 +53,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Meiryo', 'Noto Sans JP', sans-serif;
+            font-family: var(--font-body);
             background-color: var(--bg-deepest);
             color: var(--text-primary);
             overflow-x: hidden;
@@ -134,6 +140,7 @@
         }
 
         .nav-brand .name {
+            font-family: var(--font-display);
             font-size: 18px;
             font-weight: 700;
             color: var(--sakura);
@@ -186,6 +193,7 @@
         }
 
         .hero h1 {
+            font-family: var(--font-display);
             font-size: clamp(48px, 8vw, 80px);
             font-weight: 800;
             color: var(--sakura);
@@ -194,6 +202,7 @@
         }
 
         .hero .subtitle-jp {
+            font-family: var(--font-display);
             font-size: clamp(24px, 4vw, 36px);
             color: var(--lavender);
             margin-bottom: 16px;
@@ -222,6 +231,7 @@
             border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
+            font-family: var(--font-body);
             text-decoration: none;
             transition: all 0.2s;
             cursor: pointer;
@@ -258,6 +268,7 @@
         }
 
         .section-title {
+            font-family: var(--font-display);
             font-size: 32px;
             font-weight: 700;
             color: var(--text-primary);
@@ -304,6 +315,7 @@
         }
 
         .feature-card h3 {
+            font-family: var(--font-display);
             font-size: 16px;
             font-weight: 600;
             color: var(--sakura);
@@ -637,6 +649,7 @@
         }
 
         .contact-card .platform {
+            font-family: var(--font-mono);
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 1px;
@@ -716,6 +729,7 @@
         .hero-pitch {
             position: relative;
             z-index: 2;
+            font-family: var(--font-display);
             font-size: clamp(24px, 4.6vw, 42px);
             font-weight: 700;
             color: var(--text-primary);
