@@ -450,9 +450,13 @@
             position: absolute;
             width: 85px; height: 85px;
             left: 0; top: 0;
-            cursor: pointer;
+            cursor: grab;
             user-select: none;
             z-index: 3;
+        }
+
+        .demo-pet.dragging {
+            cursor: grabbing;
         }
 
         .demo-pet:focus-visible {
@@ -1422,6 +1426,7 @@
             let sleeping = false, patting = false, pats = 0;
             let mouseInWindow = null; 
             let lastTime = null;
+            let isDragging = false, dragMoved = false, dragOffset = { x: 0, y: 0 };
 
             window.addEventListener('mousemove', (e) => { mouseInWindow = { x: e.clientX, y: e.clientY }; }, { passive: true });
             window.addEventListener('mouseleave', () => { mouseInWindow = null; });
@@ -1497,7 +1502,7 @@
             }
 
             function tickWander(dt) {
-                if (sleeping || patting) return;
+                if (sleeping || patting || isDragging) return;
                 const r = stageRect();
 
                 if (wanderState === 'resting') {
@@ -1638,7 +1643,11 @@
                 showBubble(PAT_LINES[Math.floor(Math.random() * PAT_LINES.length)], 1300);
             }
 
-            pet.addEventListener('click', (e) => { e.stopPropagation(); pat(); });
+            pet.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (dragMoved) { dragMoved = false; return; }
+                pat();
+            });
             pet.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -1647,6 +1656,33 @@
                 }
             });
             stage.addEventListener('click', () => { if (sleeping) wakeUp(); });
+
+            pet.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isDragging = true;
+                dragMoved = false;
+                pet.classList.add('dragging');
+                if (sleeping) wakeUp();
+                const r = stageRect();
+                dragOffset = { x: e.clientX - r.left - basePos.x, y: e.clientY - r.top - basePos.y };
+                if (pet.setPointerCapture) pet.setPointerCapture(e.pointerId);
+            });
+
+            window.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                dragMoved = true;
+                const r = stageRect();
+                basePos = clampToStage(e.clientX - r.left - dragOffset.x, e.clientY - r.top - dragOffset.y);
+            });
+
+            window.addEventListener('pointerup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                pet.classList.remove('dragging');
+                wanderState = 'resting';
+                wanderRestTimer = 0.6 + Math.random() * 1.0;
+            });
 
             function frame(now) {
                 if (lastTime == null) lastTime = now;
