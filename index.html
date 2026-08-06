@@ -218,13 +218,75 @@
             padding: 80px 24px 40px;
         }
 
-        .hero-icon {
-            width: 90px; height: 90px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            filter: drop-shadow(0 0 24px rgba(255, 183, 197, 0.4));
-            cursor: pointer;
+        .hero-eyebrow {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            gap: 9px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(232, 121, 165, 0.1);
+            border: 1px solid rgba(232, 121, 165, 0.32);
+            color: var(--sakura);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            margin-bottom: 22px;
             opacity: 0;
+        }
+
+        .hero-eyebrow .dot {
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--sakura);
+            box-shadow: 0 0 8px var(--sakura);
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.25; }
+        }
+
+        .hero-watermark {
+            position: absolute;
+            top: 46%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-6deg);
+            pointer-events: none;
+            z-index: 0;
+            animation: watermark-drift 20s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .watermark-main {
+            display: block;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: min(46vw, 460px);
+            color: rgba(200, 182, 226, 0.05);
+            white-space: nowrap;
+        }
+
+        .watermark-translation {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: min(2.4vw, 22px);
+            letter-spacing: 1px;
+            color: rgba(200, 182, 226, 0.3);
+            margin: 0 0 -9.35em 17.6em;
+        }
+
+        @keyframes watermark-drift {
+            0%, 100% { transform: translate(-50%, -50%) rotate(-6deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(-4deg) scale(1.04); }
         }
 
         .hero h1 {
@@ -1001,7 +1063,7 @@
             max-width: 720px;
             margin: 4px auto 14px;
         }
-        .hero-icon, .hero h1, .hero .subtitle-jp, .hero .tagline, .hero-buttons {
+        .hero-eyebrow, .hero h1, .hero .subtitle-jp, .hero .tagline, .hero-buttons {
             position: relative;
             z-index: 2;
         }
@@ -1049,7 +1111,8 @@
         @media (max-width: 480px) {
             section { padding: 40px 16px; }
             .hero { padding: 70px 16px 32px; }
-            .hero-icon { width: 72px; height: 72px; }
+            .hero-watermark .watermark-main { font-size: min(70vw, 320px); }
+            .hero-eyebrow { font-size: 10px; padding: 6px 12px; }
             .hero-buttons { flex-direction: column; width: 100%; }
             .hero-buttons .btn { width: 100%; justify-content: center; }
             .mockup-sidebar { width: 120px; }
@@ -1086,7 +1149,12 @@
         <div class="hero-orb orb-2" aria-hidden="true"></div>
         <div class="hero-orb orb-3" aria-hidden="true"></div>
 
-        <img src="gifuda_icon.png" class="hero-icon" alt="Gifuda icon" id="heroIcon">
+        <span class="hero-watermark" aria-hidden="true">
+            <span class="watermark-translation">Kirika</span>
+            <span class="watermark-main">キリカ</span>
+        </span>
+
+        <span class="hero-eyebrow" id="heroEyebrow"><span class="dot"></span>Turn any GIF into a living desktop pet</span>
         <h1 id="heroTitle">Gifuda</h1>
         <div class="subtitle-jp" id="heroJp">ギフダ</div>
         <h2 class="hero-pitch" id="heroPitch">The perfect desktop companion for <span class="gradient-text">people who name their GIFs</span></h2>
@@ -1318,7 +1386,7 @@
         })();
 
         window.addEventListener('DOMContentLoaded', () => {
-            const els = ['#heroIcon', '#heroTitle', '#heroJp', '#heroPitch', '#heroTagline', '#heroButtons', '#scrollCue']
+            const els = ['#heroEyebrow', '#heroTitle', '#heroJp', '#heroPitch', '#heroTagline', '#heroButtons', '#scrollCue']
                 .map(sel => document.querySelector(sel));
 
             safeAnime({
@@ -1328,26 +1396,6 @@
                 easing: 'easeOutQuad',
                 duration: 700,
                 delay: hasAnime ? anime.stagger(110, { start: 150 }) : 0
-            });
-
-            if (hasAnime && !reducedMotion) {
-                anime({
-                    targets: '#heroIcon',
-                    translateY: [0, -10, 0],
-                    duration: 3000,
-                    easing: 'easeInOutSine',
-                    loop: true,
-                    delay: 1200
-                });
-            }
-
-            document.getElementById('heroIcon').addEventListener('click', () => {
-                safeAnime({
-                    targets: '#heroIcon',
-                    rotate: [{ value: -14, duration: 90 }, { value: 12, duration: 140 }, { value: 0, duration: 160 }],
-                    scale: [{ value: 1.12, duration: 120 }, { value: 1, duration: 180 }],
-                    easing: 'easeOutQuad'
-                });
             });
         });
 
@@ -1405,6 +1453,12 @@
             const pers = { activity: 0.55, laziness: 0.4, reactivity: 1.0, wanderPref: 1.3 };
             const wanderAmount = 0.85;
             const cursorAmount = 0.7;
+            const bobAmount = 0.6;
+            const bobF1 = 0.83, bobF2 = 1.37, bobF3 = 2.11;
+            const bobPhase1 = Math.random() * Math.PI * 2;
+            const bobPhase2 = Math.random() * Math.PI * 2;
+            const bobPhase3 = Math.random() * Math.PI * 2;
+            let elapsed = 0;
 
             let basePos = { x: 0, y: 0 };      
             let wanderState = 'resting';
@@ -1424,6 +1478,7 @@
             let facing = 1;          
             let facingDisplay = 1;   
             let sleeping = false, patting = false, pats = 0;
+            let sleepFade = 0, sleepTarget = 0, sleepRockPhase = 0;
             let mouseInWindow = null; 
             let lastTime = null;
             let isDragging = false, dragMoved = false, dragOffset = { x: 0, y: 0 };
@@ -1611,17 +1666,15 @@
             }
 
             function goToSleep() {
-                sleeping = true;
+                sleepTarget = 1;
                 idleRests = 0;
                 stageHint.textContent = 'asleep — click to wake it up';
-                safeAnime({ targets: zzz, opacity: [0, 1], translateY: [4, -6], duration: 500, easing: 'easeOutQuad' });
             }
 
             function wakeUp() {
-                if (!sleeping) return;
-                sleeping = false;
+                if (sleepTarget === 0) return;
+                sleepTarget = 0;
                 stageHint.textContent = 'move your cursor nearby, or click to pat';
-                safeAnime({ targets: zzz, opacity: [1, 0], duration: 250, easing: 'easeInQuad' });
                 wanderState = 'resting';
                 wanderRestTimer = 0.4;
             }
@@ -1687,6 +1740,10 @@
                 if (lastTime == null) lastTime = now;
                 const dt = Math.min((now - lastTime) / 1000, 0.08); 
                 lastTime = now;
+                elapsed += dt;
+
+                sleepFade += (sleepTarget - sleepFade) * Math.min(1, dt);
+                sleeping = sleepFade > 0.5;
 
                 tickWander(dt);
                 tickCursor(dt);
@@ -1696,13 +1753,36 @@
                 tiltAngle += (tiltTarget - tiltAngle) * smooth;
                 lookY += (lookYTarget - lookY) * smooth;
 
+                let rockAngle = 0;
+                if (sleepFade > 0.01) {
+                    sleepRockPhase += dt * 1.5;
+                    rockAngle = Math.sin(sleepRockPhase) * 7 * sleepFade;
+                }
+
+                const opacityFactor = 1 - sleepFade * 0.35;
+                const brightness = 1 - sleepFade * 0.35;
+                const squishY = 1 - sleepFade * 0.05;
+
+                const bobSlowdown = 1 - sleepFade * 0.7;
+                const bobA1 = (1.0 + bobAmount * 3.0) * bobSlowdown;
+                const bobA2 = bobA1 * 0.4;
+                const bobA3 = bobA1 * 0.2;
+                const bobY = bobA1 * Math.sin(bobF1 * elapsed + bobPhase1) +
+                    bobA2 * Math.sin(bobF2 * elapsed + bobPhase2) +
+                    bobA3 * Math.sin(bobF3 * elapsed + bobPhase3);
+                const bobX = Math.sin(elapsed * 0.5 + bobPhase1) * bobA1 * 0.3;
+
                 pet.style.left = basePos.x + 'px';
                 pet.style.top = basePos.y + 'px';
-                const growScale = sleeping ? 0.92 : hoverGrow;
+                pet.style.opacity = opacityFactor.toFixed(3);
+                petSquish.style.filter = 'drop-shadow(0 6px 14px rgba(0,0,0,0.4)) brightness(' + brightness.toFixed(3) + ')';
+                zzz.style.opacity = sleepFade.toFixed(3);
+                zzz.style.transform = 'translateY(' + (4 - sleepFade * 10).toFixed(2) + 'px)';
                 petInner.style.transform =
-                    'scaleX(' + (facingDisplay * growScale).toFixed(3) + ') ' +
-                    'scaleY(' + growScale.toFixed(3) + ') ' +
-                    'rotate(' + tiltAngle.toFixed(2) + 'deg) ' +
+                    'translate(' + bobX.toFixed(2) + 'px, ' + bobY.toFixed(2) + 'px) ' +
+                    'scaleX(' + (facingDisplay * hoverGrow).toFixed(3) + ') ' +
+                    'scaleY(' + (hoverGrow * squishY).toFixed(3) + ') ' +
+                    'rotate(' + (tiltAngle + rockAngle).toFixed(2) + 'deg) ' +
                     'translateY(' + lookY.toFixed(2) + 'px)';
 
                 requestAnimationFrame(frame);
